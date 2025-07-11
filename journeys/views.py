@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 from django.db.models import Count, Prefetch
+from django.contrib.auth.decorators import login_required
 
 from journeys.models import Route, Comment
+from journeys.forms import JourneyCreateForm
 
 
 def journey_view(request: HttpRequest) -> HttpResponse:
@@ -28,8 +30,18 @@ def journey_detail_view(request: HttpRequest, pk: int) -> HttpResponse:
     return render(request, "journeys/journey_detail.html", {"journey_detail": journey_detail})
 
 
+@login_required
 def journey_create_view(request: HttpRequest) -> HttpResponse:
-    pass
+    if request.method == "POST":
+        form = JourneyCreateForm(request.POST)
+        if form.is_valid():
+            journey = form.save(commit=False)
+            journey.author = request.user
+            journey.save() 
+            return redirect("journeys:journeys")
+    else:
+        form = JourneyCreateForm()
+    return render(request, "journeys/journey_create.html", {"form": form})
 
 
 def journey_delete_view(request: HttpRequest) -> HttpResponse:
