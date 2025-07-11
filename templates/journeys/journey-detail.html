@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ journey_detail.title }}</h1>
+  <h3>Posted by: {{ journey_detail.author.username }} at: {{ journey_detail.updated_at }}</h3>
+  <p>{{ journey_detail.content }}</p>
+  <br>
+  <hr>
+  <br>
+  {% if journey_detail.comment_count > 0 %}
+    <h2>This route has: {{ journey_detail.comment_count }} comments</h2>
+    {% for comment in journey_detail.comments.all %}
+      <h3>{{ comment.author.username }} at: {{ comment.created_at }}</h3>
+      <p>{{ comment.content }}</p>
+    {% endfor %}
+  {% else %}
+    <h2>No comments yet :(</h2>
+  {% endif %}
+
+{% endblock content %}

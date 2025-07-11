@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if journeys_list %}
+    <h1>All travels:</h1>
+    {% for journey in journeys_list %}
+      <h2><a href="{% url "journeys:journey_detail" pk=journey.pk %}">{{ journey.title }}</a></h2>
+      <h3>Posted by: {{ journey.author.username }} at: {{ journey.updated_at }}</h3>
+      <p>{{ journey.content }}</p>
+      <hr>
+    {% endfor %}
+  {% else %}
+    <h1>No journeys available yet :(</h1>
+  {% endif %}
+{% endblock content %}
