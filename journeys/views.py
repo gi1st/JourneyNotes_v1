@@ -4,16 +4,16 @@ from django.db.models import Count, Prefetch
 from django.contrib.auth.decorators import login_required
 
 from journeys.models import Route, Comment
-from journeys.forms import JourneyCreateForm
+from journeys.forms import JourneyForm
 
 
-def journey_view(request: HttpRequest) -> HttpResponse:
+def journey_list_view(request: HttpRequest) -> HttpResponse:
     journeys_list = (
         Route.objects
         .select_related("author")
         .annotate(comment_count=Count("comments"))
     )
-    return render(request, "journeys/journeys.html", {"journeys_list": journeys_list})
+    return render(request, "journeys/journeys-list.html", {"journeys_list": journeys_list})
 
 
 def journey_detail_view(request: HttpRequest, pk: int) -> HttpResponse:
@@ -26,21 +26,38 @@ def journey_detail_view(request: HttpRequest, pk: int) -> HttpResponse:
         )
         .get(pk=pk)
     )
-    return render(request, "journeys/journey_detail.html", {"journey_detail": journey_detail})
+    return render(request, "journeys/journey-detail.html", {"journey_detail": journey_detail})
 
 
 @login_required
 def journey_create_view(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        form = JourneyCreateForm(request.POST)
+        form = JourneyForm(request.POST)
         if form.is_valid():
             journey = form.save(commit=False)
             journey.author = request.user
             journey.save() 
-            return redirect("journeys:journeys")
+            return redirect("journeys:journeys_list")
     else:
-        form = JourneyCreateForm()
-    return render(request, "journeys/journey_create.html", {"form": form})
+        form = JourneyForm()
+    return render(request, "journeys/journey-create.html", {"form": form})
+
+
+@login_required
+def journey_update_view(request: HttpRequest, pk: int) -> HttpResponse:
+    journey = get_object_or_404(Route, pk=pk)
+    if journey.author != request.user:
+        return redirect("journeys:journeys_list")
+
+    if request.method == "POST":
+        form = JourneyForm(request.POST, instance=journey)
+        if form.is_valid():
+            form.save()
+            return redirect("journeys:journeys_list")
+    else:
+        form = JourneyForm(instance=journey)
+
+    return render(request, "journeys/journey-update.html", {"form": form})
 
 
 @login_required
@@ -49,4 +66,4 @@ def journey_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
         obj = get_object_or_404(Route, pk=pk)
         if obj.author == request.user:
             obj.delete()
-        return redirect("journeys:journeys")
+        return redirect("journeys:journeys_list")
