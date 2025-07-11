@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse
 from django.db.models import Count, Prefetch
 from django.contrib.auth.decorators import login_required
@@ -14,7 +14,6 @@ def journey_view(request: HttpRequest) -> HttpResponse:
         .annotate(comment_count=Count("comments"))
     )
     return render(request, "journeys/journeys.html", {"journeys_list": journeys_list})
-
 
 
 def journey_detail_view(request: HttpRequest, pk: int) -> HttpResponse:
@@ -44,5 +43,10 @@ def journey_create_view(request: HttpRequest) -> HttpResponse:
     return render(request, "journeys/journey_create.html", {"form": form})
 
 
-def journey_delete_view(request: HttpRequest) -> HttpResponse:
-    pass
+@login_required
+def journey_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
+    if request.method == "POST":
+        obj = get_object_or_404(Route, pk=pk)
+        if obj.author == request.user:
+            obj.delete()
+        return redirect("journeys:journeys")
