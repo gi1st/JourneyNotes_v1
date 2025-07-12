@@ -5,8 +5,9 @@
 
 {% block content %}
   <h1>Tell about your journey:</h1>
-  <form action="" method="post">
+  <form action="" method="post" novalidate>
     {% csrf_token %}
+    {{ form.non_field_errors }}
     {{ form.as_p}}
     <button type="submit">Submit</button>
   </form>
