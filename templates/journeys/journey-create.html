@@ -5,6 +5,7 @@
 
 {% block content %}
   <h1>Tell about your journey:</h1>
+  <a href="{% url "journeys:journeys_list" %}">Go back</a>
   <form action="" method="post" novalidate>
     {% csrf_token %}
     {{ form.non_field_errors }}
