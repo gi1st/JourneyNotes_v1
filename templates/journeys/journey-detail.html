@@ -2,6 +2,11 @@
 {% block content %}
   <h1>{{ journey_detail.title }}</h1>
   <h3>Posted by: {{ journey_detail.author.username }} at: {{ journey_detail.updated_at }}</h3>
+  {% if user == journey_detail.author %}
+    <a href="{% url "journeys:journey_update" pk=journey_detail.pk %}">Edit journey</a>
+    <a href="{% url "journeys:journey_delete" pk=journey_detail.pk %}">Delete journey</a>
+  {% endif %}
+  <a href="{% url "journeys:journeys_list" %}">Go back</a>
   <p>{{ journey_detail.content }}</p>
   <br>
   <hr>
@@ -15,5 +20,25 @@
   {% else %}
     <h2>No comments yet :(</h2>
   {% endif %}
+  <hr>
+  <h2>Add a comment:</h2>
 
+  {% if form.errors %}
+    <ul>
+      {% for field in form %}
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form action="{% url "journeys:add_comment" pk=journey_detail.pk %}" method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add comment</button>
+  </form>
 {% endblock content %}
