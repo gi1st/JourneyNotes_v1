@@ -6,6 +6,7 @@
     <a href="{% url "journeys:journey_update" pk=journey_detail.pk %}">Edit journey</a>
     <a href="{% url "journeys:journey_delete" pk=journey_detail.pk %}">Delete journey</a>
   {% endif %}
+  <a href="{% url "journeys:journeys_list" %}">Go back</a>
   <p>{{ journey_detail.content }}</p>
   <br>
   <hr>
