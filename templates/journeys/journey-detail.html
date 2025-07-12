@@ -2,6 +2,10 @@
 {% block content %}
   <h1>{{ journey_detail.title }}</h1>
   <h3>Posted by: {{ journey_detail.author.username }} at: {{ journey_detail.updated_at }}</h3>
+  {% if user == journey_detail.author %}
+    <a href="{% url "journeys:journey_update" pk=journey_detail.pk %}">Edit journey</a>
+    <a href="{% url "journeys:journey_delete" pk=journey_detail.pk %}">Delete journey</a>
+  {% endif %}
   <p>{{ journey_detail.content }}</p>
   <br>
   <hr>
