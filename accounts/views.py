@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 
 from accounts.forms import RegisterForm
@@ -30,7 +30,12 @@ def login_view(request):
 
 
 def logout_view(request):
-    pass
+    if request.method == "POST":
+        logout(request)
+        return redirect("journeys:journeys_list")
+    else:
+        return render(request, "accounts/logout.html")
+
 
 
 def change_password_view(request):
