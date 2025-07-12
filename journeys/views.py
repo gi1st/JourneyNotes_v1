@@ -67,3 +67,5 @@ def journey_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
         if obj.author == request.user:
             obj.delete()
         return redirect("journeys:journeys_list")
+    else:
+        return render(request, "journeys/journey-delete.html")
