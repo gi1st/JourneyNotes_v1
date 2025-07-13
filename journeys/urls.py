@@ -7,6 +7,7 @@ from journeys.views import(
     journey_update_view,
     journey_delete_view,
     add_comment_view,
+    add_to_favorite_view,
 )
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
     path("journeys/<int:pk>/update/", journey_update_view, name="journey_update"),
     path("journeys/<int:pk>/delete/", journey_delete_view, name="journey_delete"),
     path("journeys/<int:pk>/add-comment", add_comment_view, name="add_comment"),
+    path("journeys/<int:pk>/add-to_favorite", add_to_favorite_view, name="add_to_favorite"),
 ]
 
 app_name = "journeys"

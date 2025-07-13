@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 from journeys.models import Route, Comment
 from journeys.forms import JourneyForm, CommentForm
+from accounts.models import Traveler
 
 
 def journey_list_view(request: HttpRequest) -> HttpResponse:
@@ -26,12 +27,33 @@ def journey_detail_view(request: HttpRequest, pk: int) -> HttpResponse:
         )
         .get(pk=pk)
     )
+    favorites_count = journey_detail.liked_by.count()
+    is_favorite = False
+    if request.user.is_authenticated:
+        is_favorite = journey_detail.liked_by.filter(pk=request.user.pk).exists()
     form = CommentForm()
     context = {
         "journey_detail": journey_detail,
-        "form": form
+        "form": form,
+        "favorites_count": favorites_count,
+        "is_favorite": is_favorite
     }
     return render(request, "journeys/journey-detail.html", context=context)
+
+
+@login_required
+def add_to_favorite_view(request: HttpRequest, pk: int) -> HttpResponse:
+    if request.method == "POST":
+        route = Route.objects.get(pk=pk)
+        if route.author != request.user:
+            author = Traveler.objects.get(pk=request.user.pk)
+            if not author.favorite_routs.filter(pk=route.pk).exists():
+                author.favorite_routs.add(route)
+                return redirect("journeys:journey_detail", pk=pk)
+            else:
+                author.favorite_routs.remove(route)
+                return redirect("journeys:journey_detail", pk=pk)
+                
 
 
 @login_required

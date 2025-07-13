@@ -9,6 +9,16 @@
   <a href="{% url "journeys:journeys_list" %}">Go back</a>
   <p>{{ journey_detail.content }}</p>
   <br>
+  {% if user != journey_detail.author %}
+    <form action="{% url "journeys:add_to_favorite" pk=journey_detail.pk %}" method="post">
+      {% csrf_token %}
+      <button type="submit">
+        {% if is_favorite %}💚{% else %}🤍{% endif %}
+      </button>
+    </form>
+  {% endif %}
+  <br>
+  <p>This rout was added to favorite: {{ favorites_count }} times.
   <hr>
   <br>
   {% if journey_detail.comment_count > 0 %}
