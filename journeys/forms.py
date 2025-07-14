@@ -12,3 +12,16 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ["content"]
+
+
+class RouteTitleSearchForm(forms.Form):
+    title = forms.CharField(
+        max_length=63,
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Search by title"
+            }
+        )
+    )

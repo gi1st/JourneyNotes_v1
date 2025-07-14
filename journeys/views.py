@@ -4,17 +4,29 @@ from django.db.models import Count, Prefetch
 from django.contrib.auth.decorators import login_required
 
 from journeys.models import Route, Comment
-from journeys.forms import JourneyForm, CommentForm
+from journeys.forms import JourneyForm, CommentForm, RouteTitleSearchForm
 from accounts.models import Traveler
 
 
-def journey_list_view(request: HttpRequest) -> HttpResponse:
+def journey_list_view(request: HttpRequest) -> HttpResponse:    
     journeys_list = (
         Route.objects
         .select_related("author")
         .annotate(comment_count=Count("comments"))
     )
-    return render(request, "journeys/journeys-list.html", {"journeys_list": journeys_list})
+
+    search_form = RouteTitleSearchForm(request.GET)
+    if search_form.is_valid():
+        title = search_form.cleaned_data["title"]
+        journeys_list = journeys_list.filter(title__icontains=title)
+    else:
+        title = ""
+    search_form = RouteTitleSearchForm(initial={"title": title})
+    context = {
+        "journeys_list": journeys_list,
+        "search_form": search_form,
+    }
+    return render(request, "journeys/journeys-list.html", context=context)
 
 
 def journey_detail_view(request: HttpRequest, pk: int) -> HttpResponse:
