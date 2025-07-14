@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+  <form action="" method="get">
+      {{ search_form }}
+      <button type="submit">Search 🔎</button>
+  </form>
   {% if journeys_list %}
     <h1>All travels:</h1>
     {% for journey in journeys_list %}
