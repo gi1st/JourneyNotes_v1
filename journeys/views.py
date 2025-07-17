@@ -13,6 +13,7 @@ def journey_list_view(request: HttpRequest) -> HttpResponse:
         Route.objects
         .select_related("author")
         .annotate(comment_count=Count("comments"))
+        .order_by("-updated_at")
     )
 
     search_form = RouteTitleSearchForm(request.GET)
